@@ -309,7 +309,7 @@ export default function Home() {
   );
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
   const [accepted, setAccepted] = useState(false);
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
+  // billingCycle removed — monthly and annual are now shown as separate cards
 
   const toggleService = (id: string) => {
     setSelectedServices((prev) => {
@@ -343,7 +343,7 @@ export default function Home() {
   const annualTotal = monthlyTotal * 10; // 2 months free = pay 10
   const annualSavings = monthlyTotal * 2;
 
-  const displayTotal = billingCycle === "annual" ? annualTotal : monthlyTotal;
+  // displayTotal removed — each card shows its own price
 
   const totalHoursPerMonth = (() => {
     let mins = 0;
@@ -610,7 +610,9 @@ export default function Home() {
           </div>
 
           {/* ── Right Column: Sticky Pricing Panel ── */}
-          <div className="lg:w-80 xl:w-96 flex-shrink-0 lg:sticky lg:top-8">
+          <div className="lg:w-80 xl:w-96 flex-shrink-0 lg:sticky lg:top-8 space-y-4">
+
+            {/* ── Monthly Quote Card ── */}
             <div
               className="rounded-xl border border-yellow-500/20 overflow-hidden"
               style={{
@@ -618,58 +620,18 @@ export default function Home() {
                 boxShadow: "0 0 60px rgba(201,168,76,0.08), 0 20px 60px rgba(0,0,0,0.5)",
               }}
             >
-              {/* Billing Toggle */}
-              <div className="px-6 pt-5 pb-4 border-b border-yellow-500/10">
-                <div
-                  className="flex rounded-lg overflow-hidden border border-white/10 mb-4"
-                  style={{ background: "rgba(255,255,255,0.03)" }}
-                >
-                  <button
-                    onClick={() => setBillingCycle("monthly")}
-                    className={`flex-1 py-2 text-xs font-mono-label font-bold tracking-wider transition-all duration-200 ${
-                      billingCycle === "monthly"
-                        ? "text-[#0A0A0A]"
-                        : "text-white/40 hover:text-white/60"
-                    }`}
-                    style={billingCycle === "monthly" ? { background: "linear-gradient(135deg, #C9A84C, #F0D060)" } : {}}
-                  >
-                    MONTHLY
-                  </button>
-                  <button
-                    onClick={() => setBillingCycle("annual")}
-                    className={`flex-1 py-2 text-xs font-mono-label font-bold tracking-wider transition-all duration-200 relative ${
-                      billingCycle === "annual"
-                        ? "text-[#0A0A0A]"
-                        : "text-white/40 hover:text-white/60"
-                    }`}
-                    style={billingCycle === "annual" ? { background: "linear-gradient(135deg, #C9A84C, #F0D060)" } : {}}
-                  >
-                    ANNUAL
-                    {billingCycle !== "annual" && (
-                      <span
-                        className="absolute -top-2 -right-1 text-[9px] px-1.5 py-0.5 rounded-full font-bold"
-                        style={{ background: "#C9A84C", color: "#0A0A0A" }}
-                      >
-                        SAVE 17%
-                      </span>
-                    )}
-                  </button>
-                </div>
-
+              {/* Panel Header */}
+              <div
+                className="px-6 py-5 border-b border-yellow-500/10"
+                style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.08) 0%, transparent 100%)" }}
+              >
                 <div className="font-mono-label text-xs text-yellow-500/60 tracking-widest uppercase mb-1">
-                  Your Quote
+                  Monthly Rate
                 </div>
-                <div className="font-display text-4xl font-black gold-gradient-text">
-                  $<AnimatedPrice value={displayTotal} />
+                <div className="font-display text-5xl font-black gold-gradient-text">
+                  $<AnimatedPrice value={monthlyTotal} />
                 </div>
-                <div className="text-sm text-white/40 font-mono-label mt-1">
-                  {billingCycle === "annual" ? "billed annually" : "per month"}
-                </div>
-                {billingCycle === "annual" && (
-                  <div className="mt-2 text-xs text-yellow-400/80 font-mono-label">
-                    ✦ You save ${annualSavings.toLocaleString()} — 2 months free
-                  </div>
-                )}
+                <div className="text-sm text-white/50 font-mono-label mt-1">per month · billed monthly</div>
               </div>
 
               {/* Breakdown */}
@@ -698,8 +660,8 @@ export default function Home() {
               </div>
 
               {/* Per-episode breakdown */}
-              <div className="px-6 py-4 border-b border-white/5">
-                <div className="flex justify-between items-center text-xs text-white/30 font-mono-label mb-2">
+              <div className="px-6 py-3 border-b border-white/5">
+                <div className="flex justify-between items-center text-xs text-white/30 font-mono-label mb-1.5">
                   <span>Per episode</span>
                   <span>${Math.round(monthlyTotal / 4)}</span>
                 </div>
@@ -708,53 +670,6 @@ export default function Home() {
                   <span>~{totalHoursPerMonth} hrs</span>
                 </div>
               </div>
-
-              {/* ── Annual Plan Hero Block ── */}
-              {billingCycle === "monthly" && monthlyTotal > 0 && (
-                <div className="px-6 py-4 border-b border-white/5">
-                  <button
-                    onClick={() => setBillingCycle("annual")}
-                    className="w-full rounded-xl overflow-hidden text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
-                    style={{
-                      background: "linear-gradient(135deg, #1A1400 0%, #1F1800 50%, #1A1400 100%)",
-                      border: "1px solid rgba(201,168,76,0.35)",
-                      boxShadow: "0 0 30px rgba(201,168,76,0.1)",
-                    }}
-                  >
-                    <div style={{ height: "2px", background: "linear-gradient(90deg, #C9A84C, #F0D060, #C9A84C)" }} />
-                    <div className="p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Sparkles className="w-4 h-4 text-yellow-400" />
-                        <span className="font-mono-label text-xs text-yellow-400/80 tracking-widest uppercase font-bold">
-                          Best Value — Annual Plan
-                        </span>
-                      </div>
-                      <div className="flex items-end justify-between mb-2">
-                        <div>
-                          <div className="font-display text-3xl font-black" style={{ color: "#F0D060" }}>
-                            ${annualTotal.toLocaleString()}
-                          </div>
-                          <div className="text-xs text-yellow-500/50 font-mono-label">billed once per year</div>
-                        </div>
-                        <div className="text-right">
-                          <div
-                            className="font-display text-xl font-black"
-                            style={{ color: "#F0D060" }}
-                          >
-                            ${annualSavings.toLocaleString()}
-                          </div>
-                          <div className="text-xs text-yellow-500/50">saved</div>
-                        </div>
-                      </div>
-                      <div className="text-xs text-yellow-400/60 leading-relaxed">
-                        Lock in your rate and get 2 months completely free — that's{" "}
-                        <strong className="text-yellow-400">${annualSavings.toLocaleString()} back in your pocket.</strong>{" "}
-                        Tap to switch.
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              )}
 
               {/* CTA */}
               <div className="px-6 py-5 space-y-3">
@@ -772,7 +687,7 @@ export default function Home() {
                     >
                       <span className="flex items-center justify-center gap-2">
                         <Check className="w-4 h-4" />
-                        Accept This Quote
+                        Accept Monthly Plan
                       </span>
                     </button>
                     <button
@@ -794,7 +709,6 @@ export default function Home() {
                     </p>
                   </div>
                 )}
-
                 <div className="flex items-center justify-center gap-2 text-xs text-white/25">
                   <Send className="w-3 h-3" />
                   <span>No commitment until contract signed</span>
@@ -802,26 +716,107 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Why Annual Makes Sense */}
+            {/* ── OR Divider ── */}
+            <div className="flex items-center gap-3 px-2">
+              <div className="flex-1 h-px bg-white/8" />
+              <span className="text-xs text-white/30 font-mono-label tracking-widest">OR SAVE MORE</span>
+              <div className="flex-1 h-px bg-white/8" />
+            </div>
+
+            {/* ── Annual Plan Card ── */}
             <div
-              className="mt-4 rounded-lg p-4"
-              style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.1)" }}
+              className="rounded-xl overflow-hidden"
+              style={{
+                background: "linear-gradient(160deg, #1A1400 0%, #1F1900 60%, #1A1400 100%)",
+                border: "1px solid rgba(201,168,76,0.4)",
+                boxShadow: "0 0 50px rgba(201,168,76,0.12), 0 20px 60px rgba(0,0,0,0.5)",
+              }}
             >
-              <div className="font-mono-label text-xs text-yellow-500/50 uppercase tracking-wider mb-3">
-                Why Annual Wins
-              </div>
-              <div className="space-y-2">
-                {[
-                  { icon: "🔒", text: "Locked-in rate — no price increases for 12 months" },
-                  { icon: "🎁", text: "2 months free — $3,000 in savings at base rate" },
-                  { icon: "🚀", text: "Priority scheduling & faster turnaround" },
-                  { icon: "📈", text: "Consistency builds audience — annual commitment = annual growth" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-2 text-xs text-white/45">
-                    <span className="flex-shrink-0">{item.icon}</span>
-                    <span>{item.text}</span>
+              {/* Gold top bar */}
+              <div style={{ height: "3px", background: "linear-gradient(90deg, transparent, #C9A84C, #F0D060, #C9A84C, transparent)" }} />
+
+              <div className="px-6 py-5">
+                {/* Badge */}
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-4 h-4 text-yellow-400" />
+                  <span className="font-mono-label text-xs text-yellow-400 tracking-widest uppercase font-bold">
+                    Best Value — Annual Plan
+                  </span>
+                  <span
+                    className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-mono-label font-bold"
+                    style={{ background: "rgba(201,168,76,0.2)", color: "#F0D060", border: "1px solid rgba(201,168,76,0.35)" }}
+                  >
+                    SAVE 17%
+                  </span>
+                </div>
+
+                {/* Price */}
+                <div className="mb-1">
+                  <div className="font-mono-label text-xs text-yellow-500/50 uppercase tracking-wider mb-1">
+                    Annual Total
                   </div>
-                ))}
+                  <div className="font-display text-5xl font-black" style={{ color: "#F0D060" }}>
+                    $<AnimatedPrice value={annualTotal} />
+                  </div>
+                  <div className="text-sm text-yellow-500/50 font-mono-label mt-1">
+                    billed once · that's ${Math.round(annualTotal / 12).toLocaleString()}/mo
+                  </div>
+                </div>
+
+                {/* Savings callout */}
+                <div
+                  className="rounded-lg p-3 my-4 flex items-center justify-between"
+                  style={{ background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.2)" }}
+                >
+                  <div className="text-sm text-yellow-400/80">You save</div>
+                  <div className="font-display text-2xl font-black text-yellow-400">
+                    ${annualSavings.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-yellow-500/50 text-right">
+                    2 months<br />completely free
+                  </div>
+                </div>
+
+                {/* Benefits */}
+                <div className="space-y-2 mb-5">
+                  {[
+                    { icon: "🔒", text: "Rate locked for 12 months — no increases" },
+                    { icon: "🚀", text: "Priority scheduling & faster turnaround" },
+                    { icon: "📈", text: "Annual consistency = compounding audience growth" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs text-yellow-400/60">
+                      <span className="flex-shrink-0">{item.icon}</span>
+                      <span>{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Annual CTA */}
+                {!accepted ? (
+                  <button
+                    onClick={() => setAccepted(true)}
+                    disabled={monthlyTotal === 0}
+                    className="w-full py-3.5 rounded-lg font-display font-bold text-base transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                    style={{
+                      background: monthlyTotal > 0
+                        ? "linear-gradient(135deg, #C9A84C 0%, #F0D060 50%, #C9A84C 100%)"
+                        : "#555",
+                      color: "#0A0A0A",
+                      boxShadow: monthlyTotal > 0 ? "0 0 30px rgba(201,168,76,0.3)" : "none",
+                    }}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Accept Annual Plan — Save ${annualSavings.toLocaleString()}
+                    </span>
+                  </button>
+                ) : (
+                  <div className="text-center py-2">
+                    <div className="font-display text-base font-bold text-yellow-400">
+                      🏆 Quote Accepted!
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
