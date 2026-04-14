@@ -8,7 +8,8 @@ import Home from "./pages/Home";
 
 function Router() {
   // Use base path for GitHub Pages deployment
-  const base = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+  // BASE_URL is "/iron-dentist-quote/" on GH Pages, "/" locally
+  const base = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
   return (
     <WouterRouter base={base}>
       <Switch>
