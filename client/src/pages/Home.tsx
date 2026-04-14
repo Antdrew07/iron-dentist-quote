@@ -39,7 +39,7 @@ const SERVICES: Service[] = [
       "Rename and organize files with consistent naming convention",
       "Quality-check audio levels and flag any issues",
     ],
-    pricePerEpisode: 50,
+    pricePerEpisode: 75,
     episodesPerMonth: 4,
     icon: "🎙️",
     required: true,
@@ -57,7 +57,7 @@ const SERVICES: Service[] = [
       "Schedule or publish to all podcast platforms",
       "Verify distribution to Apple, Spotify, and others",
     ],
-    pricePerEpisode: 60,
+    pricePerEpisode: 100,
     episodesPerMonth: 4,
     icon: "🎧",
     required: true,
@@ -75,7 +75,7 @@ const SERVICES: Service[] = [
       "Set end screens, cards, and playlist assignment",
       "Configure monetization settings if applicable",
     ],
-    pricePerEpisode: 65,
+    pricePerEpisode: 100,
     episodesPerMonth: 4,
     icon: "▶️",
     required: true,
@@ -93,7 +93,7 @@ const SERVICES: Service[] = [
       "Delivered in 1280×720px high-resolution format",
       "Revisions included until approved",
     ],
-    pricePerEpisode: 75,
+    pricePerEpisode: 100,
     episodesPerMonth: 4,
     icon: "🖼️",
     required: true,
@@ -652,7 +652,7 @@ export default function Home() {
               </div>
               <div className="space-y-2">
                 {[
-                  { label: "Commodity VA", range: "$300–$500/mo", note: "Basic upload only" },
+                  { label: "Commodity VA", range: "$500–$800/mo", note: "Basic upload only" },
                   { label: "This Quote", range: `$${monthlyTotal}/mo`, note: "Full workflow", highlight: true },
                   { label: "Agency Rate", range: "$2,000–$3,500/mo", note: "Same services" },
                 ].map((row) => (
