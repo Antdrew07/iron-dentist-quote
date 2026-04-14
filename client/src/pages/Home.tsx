@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import { Check, ChevronDown, ChevronUp, Download, Send, Star, Clock, Zap } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Download, Send, Star, Clock, Zap, BookOpen, TrendingUp, Sparkles } from "lucide-react";
 
 // ── Asset URLs ──────────────────────────────────────────────────────────────
 const LOGO_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310419663029617589/nCUUDSHpfnPJqzDj57Y6E8/iron-dentist-logo_f7630c04.jpeg";
@@ -103,27 +103,62 @@ const SERVICES: Service[] = [
 
 const ADD_ONS = [
   {
+    id: "instagram-clips",
+    title: "Instagram Video Clips",
+    description: "2–3 punchy vertical video clips per episode, cut from your audio/video and formatted for Instagram Reels — ready to post.",
+    details: [
+      "Pull the most compelling 60–90 second moments from each episode",
+      "Format as vertical 9:16 video with branded captions",
+      "Add animated waveform or B-roll overlay",
+      "Include Iron Dentist logo watermark and episode title",
+      "Delivered as MP4 files ready to upload",
+    ],
+    pricePerEpisode: 100,
+    episodesPerMonth: 4,
+    icon: "📸",
+    timeEstimate: "~2 hrs/episode",
+  },
+  {
+    id: "facebook-clips",
+    title: "Facebook Video Clips",
+    description: "2–3 square or landscape video clips per episode optimized for Facebook feed and Facebook Reels.",
+    details: [
+      "Repurpose episode highlights into 1:1 or 16:9 format",
+      "Branded lower-thirds with guest name and episode title",
+      "Captions burned in for silent autoplay",
+      "Optimized for Facebook algorithm with hook-first editing",
+      "Delivered as MP4 files ready to upload or schedule",
+    ],
+    pricePerEpisode: 100,
+    episodesPerMonth: 4,
+    icon: "📘",
+    timeEstimate: "~2 hrs/episode",
+  },
+  {
     id: "show-notes",
     title: "Written Show Notes / Blog Post",
     description: "Full episode summary written for SEO, posted to website or newsletter.",
+    details: [
+      "300–500 word episode summary with key takeaways",
+      "SEO-optimized title and meta description",
+      "Guest bio and relevant links included",
+      "Formatted for website or email newsletter",
+    ],
     pricePerEpisode: 60,
     episodesPerMonth: 4,
     icon: "📝",
     timeEstimate: "~1 hr/episode",
   },
   {
-    id: "social-clips",
-    title: "Social Media Audiogram Clips",
-    description: "2–3 short highlight clips per episode formatted for Instagram, Facebook & LinkedIn.",
-    pricePerEpisode: 80,
-    episodesPerMonth: 4,
-    icon: "📱",
-    timeEstimate: "~1.5 hrs/episode",
-  },
-  {
     id: "transcript",
     title: "Episode Transcript",
     description: "Full verbatim transcript for accessibility, SEO, and repurposing.",
+    details: [
+      "Accurate word-for-word transcription",
+      "Speaker-labeled for readability",
+      "Delivered in Google Doc or PDF format",
+      "Can be used as the foundation for show notes or ebooks",
+    ],
     pricePerEpisode: 30,
     episodesPerMonth: 4,
     icon: "📄",
@@ -274,7 +309,7 @@ export default function Home() {
   );
   const [selectedAddOns, setSelectedAddOns] = useState<Set<string>>(new Set());
   const [accepted, setAccepted] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly");
 
   const toggleService = (id: string) => {
     setSelectedServices((prev) => {
@@ -305,25 +340,20 @@ export default function Home() {
   );
 
   const monthlyTotal = coreTotal + addOnTotal;
-  const annualTotal = monthlyTotal * 12;
-  const annualSavings = monthlyTotal * 2; // 2 months free on annual
+  const annualTotal = monthlyTotal * 10; // 2 months free = pay 10
+  const annualSavings = monthlyTotal * 2;
 
-  const handleAccept = () => {
-    setAccepted(true);
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 5000);
-  };
+  const displayTotal = billingCycle === "annual" ? annualTotal : monthlyTotal;
 
-  // Episodes per month breakdown
-  const totalEpisodesPerMonth = 4;
   const totalHoursPerMonth = (() => {
     let mins = 0;
     if (selectedServices.has("riverside-pull")) mins += 30 * 4;
     if (selectedServices.has("buzzsprout-upload")) mins += 45 * 4;
     if (selectedServices.has("youtube-upload")) mins += 60 * 4;
     if (selectedServices.has("youtube-thumbnail")) mins += 90 * 4;
+    if (selectedAddOns.has("instagram-clips")) mins += 120 * 4;
+    if (selectedAddOns.has("facebook-clips")) mins += 120 * 4;
     if (selectedAddOns.has("show-notes")) mins += 60 * 4;
-    if (selectedAddOns.has("social-clips")) mins += 90 * 4;
     if (selectedAddOns.has("transcript")) mins += 30 * 4;
     return (mins / 60).toFixed(1);
   })();
@@ -340,14 +370,11 @@ export default function Home() {
           backgroundPosition: "center top",
         }}
       >
-        {/* Dark overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-[#0A0A0A]" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/60 via-transparent to-transparent" />
 
-        {/* Content */}
         <div className="relative z-10 container pb-12 pt-16">
           <div className="flex flex-col lg:flex-row items-start lg:items-end gap-8">
-            {/* Left: Branding */}
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4 fade-slide-up">
                 <img
@@ -393,7 +420,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: Banner image */}
             <div className="hidden lg:block w-72 flex-shrink-0 fade-slide-up fade-slide-up-delay-2">
               <img
                 src={BANNER_URL}
@@ -446,14 +472,14 @@ export default function Home() {
               <div className="flex items-center gap-3 mb-6">
                 <div className="diagonal-divider flex-1" />
                 <h2 className="font-display text-xl font-bold text-white/90 flex-shrink-0">
-                  Optional Add-Ons
+                  Grow Your Reach — Add-Ons
                 </h2>
                 <div className="diagonal-divider flex-1" />
               </div>
 
               <p className="text-sm text-white/40 mb-6 leading-relaxed">
-                Extend your reach with these additional services. Add or remove to see the price
-                update in real time.
+                Turn every episode into a multi-platform content engine. Each add-on multiplies
+                your audience reach without any extra work on your end.
               </p>
 
               <div className="space-y-3">
@@ -469,24 +495,94 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Pricing Philosophy */}
-            <div className="rounded-lg border border-yellow-500/10 bg-yellow-500/5 p-6 mb-8">
-              <h3 className="font-display text-lg font-bold text-yellow-400/90 mb-3">
-                How This Rate Was Determined
-              </h3>
-              <div className="space-y-2 text-sm text-white/50 leading-relaxed">
-                <p>
-                  Market rates for podcast management services range from{" "}
-                  <span className="text-yellow-500/80">$500–$1,500/month</span> for freelancers
-                  handling 4 episodes. This quote reflects a{" "}
-                  <span className="text-yellow-500/80">premium independent rate</span> — below
-                  agency pricing, above commodity VA rates — appropriate for a professional,
-                  brand-consistent service for a recognized podcast like Iron Dentist.
-                </p>
-                <p>
-                  Each service is priced per episode to keep things transparent. At 4 episodes/month,
-                  you get a predictable monthly investment with no hidden fees.
-                </p>
+            {/* ── Ebook Upsell Banner ── */}
+            <div
+              className="rounded-xl overflow-hidden mb-8 relative"
+              style={{
+                background: "linear-gradient(135deg, #0D1117 0%, #141A0F 50%, #0D1117 100%)",
+                border: "1px solid rgba(201,168,76,0.25)",
+                boxShadow: "0 0 40px rgba(201,168,76,0.06)",
+              }}
+            >
+              {/* Gold accent bar */}
+              <div style={{ height: "3px", background: "linear-gradient(90deg, transparent, #C9A84C, #F0D060, #C9A84C, transparent)" }} />
+
+              <div className="p-6 lg:p-8">
+                <div className="flex flex-col lg:flex-row gap-6 items-start">
+                  {/* Icon area */}
+                  <div
+                    className="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05))", border: "1px solid rgba(201,168,76,0.2)" }}
+                  >
+                    <BookOpen className="w-8 h-8 text-yellow-400" />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="font-mono-label text-xs text-yellow-500/70 tracking-widest uppercase">
+                        Premium Upsell
+                      </span>
+                      <span
+                        className="text-xs px-2 py-0.5 rounded-full font-mono-label font-bold"
+                        style={{ background: "rgba(201,168,76,0.15)", color: "#F0D060", border: "1px solid rgba(201,168,76,0.3)" }}
+                      >
+                        NEW REVENUE STREAM
+                      </span>
+                    </div>
+
+                    <h3 className="font-display text-2xl font-black text-white mb-3">
+                      Turn Your Podcast Into a{" "}
+                      <span className="gold-gradient-text">Sellable Ebook</span>
+                    </h3>
+
+                    <p className="text-white/55 text-sm leading-relaxed mb-4">
+                      Every episode of the Iron Dentist is packed with expert dental business knowledge
+                      that your audience is hungry for. We compile your best episodes — transcripts,
+                      key insights, and actionable frameworks — into a professionally designed ebook
+                      that Dr. Bobby can sell directly on his website and social media platforms.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+                      {[
+                        { icon: "📖", title: "Quarterly Ebook", desc: "Compiled from 12 episodes per quarter" },
+                        { icon: "💰", title: "Sell for $27–$97", desc: "Passive income from existing content" },
+                        { icon: "📣", title: "Social-Ready", desc: "Formatted for website, Gumroad & social" },
+                      ].map((item) => (
+                        <div
+                          key={item.title}
+                          className="rounded-lg p-3"
+                          style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        >
+                          <div className="text-xl mb-1">{item.icon}</div>
+                          <div className="text-xs font-bold text-white/80 mb-0.5">{item.title}</div>
+                          <div className="text-xs text-white/35">{item.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div>
+                        <div className="font-mono-label text-xs text-white/30 uppercase tracking-wider mb-1">
+                          One-Time Project Rate
+                        </div>
+                        <div className="flex items-baseline gap-2">
+                          <span className="font-display text-3xl font-black gold-gradient-text">$1,500</span>
+                          <span className="text-white/30 text-sm">–</span>
+                          <span className="font-display text-3xl font-black gold-gradient-text">$2,500</span>
+                        </div>
+                        <div className="text-xs text-white/30 mt-0.5">per ebook (based on length & design complexity)</div>
+                      </div>
+
+                      <div
+                        className="rounded-lg p-3 text-xs text-yellow-400/80 leading-relaxed"
+                        style={{ background: "rgba(201,168,76,0.06)", border: "1px solid rgba(201,168,76,0.12)" }}
+                      >
+                        <TrendingUp className="w-3.5 h-3.5 inline mr-1 mb-0.5" />
+                        <strong>ROI Example:</strong> Sell 30 copies at $47 = <strong className="text-yellow-400">$1,410 back</strong> in month one alone.
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -522,20 +618,58 @@ export default function Home() {
                 boxShadow: "0 0 60px rgba(201,168,76,0.08), 0 20px 60px rgba(0,0,0,0.5)",
               }}
             >
-              {/* Panel Header */}
-              <div
-                className="px-6 py-5 border-b border-yellow-500/10"
-                style={{
-                  background: "linear-gradient(135deg, rgba(201,168,76,0.08) 0%, transparent 100%)",
-                }}
-              >
+              {/* Billing Toggle */}
+              <div className="px-6 pt-5 pb-4 border-b border-yellow-500/10">
+                <div
+                  className="flex rounded-lg overflow-hidden border border-white/10 mb-4"
+                  style={{ background: "rgba(255,255,255,0.03)" }}
+                >
+                  <button
+                    onClick={() => setBillingCycle("monthly")}
+                    className={`flex-1 py-2 text-xs font-mono-label font-bold tracking-wider transition-all duration-200 ${
+                      billingCycle === "monthly"
+                        ? "text-[#0A0A0A]"
+                        : "text-white/40 hover:text-white/60"
+                    }`}
+                    style={billingCycle === "monthly" ? { background: "linear-gradient(135deg, #C9A84C, #F0D060)" } : {}}
+                  >
+                    MONTHLY
+                  </button>
+                  <button
+                    onClick={() => setBillingCycle("annual")}
+                    className={`flex-1 py-2 text-xs font-mono-label font-bold tracking-wider transition-all duration-200 relative ${
+                      billingCycle === "annual"
+                        ? "text-[#0A0A0A]"
+                        : "text-white/40 hover:text-white/60"
+                    }`}
+                    style={billingCycle === "annual" ? { background: "linear-gradient(135deg, #C9A84C, #F0D060)" } : {}}
+                  >
+                    ANNUAL
+                    {billingCycle !== "annual" && (
+                      <span
+                        className="absolute -top-2 -right-1 text-[9px] px-1.5 py-0.5 rounded-full font-bold"
+                        style={{ background: "#C9A84C", color: "#0A0A0A" }}
+                      >
+                        SAVE 17%
+                      </span>
+                    )}
+                  </button>
+                </div>
+
                 <div className="font-mono-label text-xs text-yellow-500/60 tracking-widest uppercase mb-1">
                   Your Quote
                 </div>
                 <div className="font-display text-4xl font-black gold-gradient-text">
-                  $<AnimatedPrice value={monthlyTotal} />
+                  $<AnimatedPrice value={displayTotal} />
                 </div>
-                <div className="text-sm text-white/40 font-mono-label mt-1">per month</div>
+                <div className="text-sm text-white/40 font-mono-label mt-1">
+                  {billingCycle === "annual" ? "billed annually" : "per month"}
+                </div>
+                {billingCycle === "annual" && (
+                  <div className="mt-2 text-xs text-yellow-400/80 font-mono-label">
+                    ✦ You save ${annualSavings.toLocaleString()} — 2 months free
+                  </div>
+                )}
               </div>
 
               {/* Breakdown */}
@@ -575,36 +709,59 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Annual Option */}
-              <div className="px-6 py-4 border-b border-white/5">
-                <div className="rounded-lg bg-yellow-500/8 border border-yellow-500/15 p-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="text-xs font-mono-label text-yellow-500/70 uppercase tracking-wider mb-1">
-                        Annual Plan
+              {/* ── Annual Plan Hero Block ── */}
+              {billingCycle === "monthly" && monthlyTotal > 0 && (
+                <div className="px-6 py-4 border-b border-white/5">
+                  <button
+                    onClick={() => setBillingCycle("annual")}
+                    className="w-full rounded-xl overflow-hidden text-left transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                    style={{
+                      background: "linear-gradient(135deg, #1A1400 0%, #1F1800 50%, #1A1400 100%)",
+                      border: "1px solid rgba(201,168,76,0.35)",
+                      boxShadow: "0 0 30px rgba(201,168,76,0.1)",
+                    }}
+                  >
+                    <div style={{ height: "2px", background: "linear-gradient(90deg, #C9A84C, #F0D060, #C9A84C)" }} />
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Sparkles className="w-4 h-4 text-yellow-400" />
+                        <span className="font-mono-label text-xs text-yellow-400/80 tracking-widest uppercase font-bold">
+                          Best Value — Annual Plan
+                        </span>
                       </div>
-                      <div className="font-display text-2xl font-bold text-white/80">
-                        $<AnimatedPrice value={annualTotal - annualSavings} />
-                        <span className="text-sm font-sans font-normal text-white/30">/yr</span>
+                      <div className="flex items-end justify-between mb-2">
+                        <div>
+                          <div className="font-display text-3xl font-black" style={{ color: "#F0D060" }}>
+                            ${annualTotal.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-yellow-500/50 font-mono-label">billed once per year</div>
+                        </div>
+                        <div className="text-right">
+                          <div
+                            className="font-display text-xl font-black"
+                            style={{ color: "#F0D060" }}
+                          >
+                            ${annualSavings.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-yellow-500/50">saved</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-yellow-400/60 leading-relaxed">
+                        Lock in your rate and get 2 months completely free — that's{" "}
+                        <strong className="text-yellow-400">${annualSavings.toLocaleString()} back in your pocket.</strong>{" "}
+                        Tap to switch.
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-xs text-yellow-500/70 font-mono-label">Save</div>
-                      <div className="font-display text-lg font-bold text-yellow-400">
-                        $<AnimatedPrice value={annualSavings} />
-                      </div>
-                      <div className="text-xs text-white/30">(2 months free)</div>
-                    </div>
-                  </div>
+                  </button>
                 </div>
-              </div>
+              )}
 
               {/* CTA */}
               <div className="px-6 py-5 space-y-3">
                 {!accepted ? (
                   <>
                     <button
-                      onClick={handleAccept}
+                      onClick={() => setAccepted(true)}
                       disabled={monthlyTotal === 0}
                       className="gold-shimmer w-full py-3.5 rounded-lg font-display font-bold text-base text-[#0A0A0A] transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed gold-pulse"
                       style={{
@@ -645,34 +802,24 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Market Context Card */}
-            <div className="mt-4 rounded-lg border border-white/6 bg-white/3 p-4">
-              <div className="font-mono-label text-xs text-white/30 uppercase tracking-wider mb-3">
-                Market Context
+            {/* Why Annual Makes Sense */}
+            <div
+              className="mt-4 rounded-lg p-4"
+              style={{ background: "rgba(201,168,76,0.04)", border: "1px solid rgba(201,168,76,0.1)" }}
+            >
+              <div className="font-mono-label text-xs text-yellow-500/50 uppercase tracking-wider mb-3">
+                Why Annual Wins
               </div>
               <div className="space-y-2">
                 {[
-                  { label: "Commodity VA", range: "$500–$800/mo", note: "Basic upload only" },
-                  { label: "This Quote", range: `$${monthlyTotal}/mo`, note: "Full workflow", highlight: true },
-                  { label: "Agency Rate", range: "$2,000–$3,500/mo", note: "Same services" },
-                ].map((row) => (
-                  <div
-                    key={row.label}
-                    className={`flex justify-between items-center text-xs py-1.5 px-2 rounded ${
-                      row.highlight
-                        ? "bg-yellow-500/8 border border-yellow-500/15"
-                        : "border border-transparent"
-                    }`}
-                  >
-                    <div>
-                      <span className={row.highlight ? "text-yellow-400 font-medium" : "text-white/40"}>
-                        {row.label}
-                      </span>
-                      <span className="text-white/20 ml-2">{row.note}</span>
-                    </div>
-                    <span className={row.highlight ? "text-yellow-400 font-mono-label font-bold" : "text-white/30 font-mono-label"}>
-                      {row.range}
-                    </span>
+                  { icon: "🔒", text: "Locked-in rate — no price increases for 12 months" },
+                  { icon: "🎁", text: "2 months free — $3,000 in savings at base rate" },
+                  { icon: "🚀", text: "Priority scheduling & faster turnaround" },
+                  { icon: "📈", text: "Consistency builds audience — annual commitment = annual growth" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs text-white/45">
+                    <span className="flex-shrink-0">{item.icon}</span>
+                    <span>{item.text}</span>
                   </div>
                 ))}
               </div>
